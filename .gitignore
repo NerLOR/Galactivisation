@@ -1,0 +1,7 @@
+*
+!.gitignore
+!src
+!src/*
+!res
+!res/*
+!Makefile
