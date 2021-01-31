@@ -9,7 +9,6 @@ Game::Game() {
 }
 
 bool Game::Init(SDL_Renderer *renderer) {
-    OnResize(renderer);
     galaxy->Init(renderer);
     return true;
 }
@@ -61,5 +60,6 @@ void Game::Render(SDL_Renderer *renderer) {
 }
 
 void Game::OnResize(SDL_Renderer *renderer) {
+    galaxy->OnResize(renderer);
     galaxy->cam.Init(renderer, galaxy->GetDiameter());
 }

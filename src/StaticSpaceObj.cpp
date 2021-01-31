@@ -21,9 +21,9 @@ void StaticSpaceObj::Render(SDL_Renderer *renderer, Camera *cam) {
     bool visible = cam->GetScreenPos(&this->pos, &dst, size, size);
     bool marked = false;
     if (visible) {
-        if (dst.w == 0) dst.w = 1;
-        if (dst.h == 0) dst.h = 1;
-        if (dst.w == 1 && dst.h == 1) {
+        if (dst.w < 1) dst.w = 1;
+        if (dst.h < 1) dst.h = 1;
+        if (dst.w <= 1 && dst.h <= 1) {
             SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0x00);
             SDL_RenderDrawPoint(renderer, dst.x, dst.y);
             if (hypot(dst.x - cam->mouseX, dst.y - cam->mouseY) < 15) {
@@ -45,7 +45,6 @@ void StaticSpaceObj::Render(SDL_Renderer *renderer, Camera *cam) {
             } else {
                 SDL_SetRenderDrawColor(renderer, 0x20, 0x20, 0x20, 0x00);
             }
-
         }
     }
 }

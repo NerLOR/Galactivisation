@@ -33,6 +33,8 @@ public:
 
     bool GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long w, unsigned long h);
 
+    bool GetScreenPosF(Position *obj_pos, SDL_FRect *rect, unsigned long w, unsigned long h);
+
     void Render(SDL_Renderer *renderer, long *x1, long *y1, long *x2, long *y2);
 
     void Init(SDL_Renderer *renderer, unsigned long diameter);

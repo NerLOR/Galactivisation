@@ -51,15 +51,21 @@ bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long w, un
     rel_pos_1 -= pos;
     rel_pos_2 -= pos;
     delete half_size;
-    long x1 = rel_pos_1.x / (long) mppx + screenW / 2;
-    long y1 = rel_pos_1.y / (long) mppx + screenH / 2;
-    long x2 = rel_pos_2.x / (long) mppx + screenW / 2;
-    long y2 = rel_pos_2.y / (long) mppx + screenH / 2;
+    long sw2 = screenW / 2;
+    long sh2 = screenH / 2;
+    long x1 = rel_pos_1.x / (long) mppx + sw2;
+    long y1 = rel_pos_1.y / (long) mppx + sh2;
+    long x2 = rel_pos_2.x / (long) mppx + sw2;
+    long y2 = rel_pos_2.y / (long) mppx + sh2;
     rect->x = (int) x1;
     rect->y = (int) y1;
     rect->w = (int) (x2 - x1);
     rect->h = (int) (y2 - y1);
     return x2 >= 0 && y2 >= 0 && x1 <= screenW && y1 <= screenH;
+}
+
+bool Camera::GetScreenPosF(Position *obj_pos, SDL_FRect *rect, unsigned long w, unsigned long h) {
+    return false;
 }
 
 void Camera::Render(SDL_Renderer *renderer, long *x1, long *y1, long *x2, long *y2) {

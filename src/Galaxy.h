@@ -7,6 +7,8 @@
 
 #include "SpaceObj.h"
 
+#define NUM_SYSTEMS 200000
+
 class Galaxy {
 protected:
     long x0 = -500000000000000000;
@@ -17,7 +19,7 @@ protected:
     unsigned int objsLen = 0;
     unsigned long tick = 0;
     long systemBorderReach = 10000000000;
-    SDL_Surface *preRender = nullptr;
+    SDL_Texture *preRender = nullptr;
 
 public:
     Camera cam;
@@ -34,7 +36,9 @@ public:
 
     [[nodiscard]] unsigned long GetDiameter() const;
 
-    void PreRender();
+    void PreRender(SDL_Renderer *renderer);
+
+    void OnResize(SDL_Renderer *renderer);
 };
 
 #endif //GALACTIVISATION_GALAXY_H

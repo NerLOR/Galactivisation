@@ -59,8 +59,8 @@ int main() {
     app->Init();
     app->SetFps(60);
     app->LoadTexture("res/sun.png", &sunTexture);
-    app->Resize(1080, 720, false);
     app->game.Init(app->GetRenderer());
+    app->Resize(1080, 720, false);
     app->Main();
     return 0;
 }

@@ -18,7 +18,7 @@ bool App::Resize(int w, int h, bool fullscreen) {
         return false;
     }
 
-    //SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
         fprintf(stderr, "Unable to create renderer: %s\n", SDL_GetError());
@@ -84,7 +84,8 @@ void App::Main() {
         game.Render(renderer);
         end_time = SDL_GetTicks();
         delay_time = ticksPerFrame - (end_time - start_time);
-        printf("%i\n", delay_time);
+        printf("\r%.1f FPS  ", 1000.0 / (double) (end_time - last_time));
+        fflush(stdout);
         if (delay_time > 0) {
             SDL_Delay(delay_time);
         }
