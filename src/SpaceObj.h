@@ -27,6 +27,8 @@ public:
     virtual void Calc(unsigned long t, double d) = 0;
 
     virtual void Render(SDL_Renderer *renderer, Camera *cam) = 0;
+
+    static bool Compare(SpaceObj *a, SpaceObj *b);
 };
 
 #endif //GALACTIVISATION_SPACEOBJ_H

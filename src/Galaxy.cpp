@@ -6,22 +6,8 @@
 #include "StaticSpaceObj.h"
 
 void Galaxy::AddSpaceObject(SpaceObj *obj) {
-    SpaceObj *cache = nullptr;
-    bool inserted = false;
-    for (int i = 0; i < objsLen; i++) {
-        if (inserted) {
-            cache = objs[i];
-            objs[i] = obj;
-            obj = cache;
-        } else if (objs[i]->GetPos()->x > obj->GetPos()->x) {
-            inserted = true;
-            cache = objs[i];
-            objs[i] = obj;
-            obj = cache;
-            objsLen++;
-        }
-    }
-    if (!inserted) objs[objsLen++] = obj;
+    objsLen++;
+    objs.push_back(obj);
 }
 
 void Galaxy::Init(SDL_Renderer *renderer) {
@@ -90,6 +76,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
     for (int i = 0; i < num; i++) {
         delete points[i];
     }
+    SortSpaceObjects();
 }
 
 void Galaxy::Calc(double d) {
@@ -114,12 +101,12 @@ void Galaxy::Render(SDL_Renderer *renderer) {
         SDL_RenderCopy(renderer, preRender, nullptr, &dst);
         delete zero;
     } else {
-        for (int i = 0; i < objsLen; i++) {
-            long idx = objs[i]->GetPos()->x;
+        for (auto obj : objs) {
+            long idx = obj->GetPos()->x;
             if (idx < cx1) {
                 continue;
             } else if (idx < cx2) {
-                objs[i]->Render(renderer, &cam);
+                obj->Render(renderer, &cam);
             } else {
                 break;
             }
@@ -143,8 +130,8 @@ void Galaxy::PreRender(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(preRenderer, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(preRenderer);
     SDL_SetRenderDrawColor(preRenderer, 0xFF, 0xFF, 0xFF, 0x00);
-    for (int i = 0; i < objsLen; i++) {
-        Position *pos = objs[i]->GetPos();
+    for (auto obj : objs) {
+        Position *pos = obj->GetPos();
         auto x = (float) pos->x / (float) mppx + (float) size / 2;
         auto y = (float) pos->y / (float) mppx + (float) size / 2;
         SDL_FRect rect;
@@ -162,4 +149,8 @@ void Galaxy::PreRender(SDL_Renderer *renderer) {
 void Galaxy::OnResize(SDL_Renderer *renderer) {
     cam.Init(renderer, GetDiameter());
     PreRender(renderer);
+}
+
+void Galaxy::SortSpaceObjects() {
+    std::sort(objs.begin(), objs.end(), SpaceObj::Compare);
 }

@@ -15,3 +15,7 @@ SpaceObj::SpaceObj(Position *pos) : pos(*pos) {
 Position *SpaceObj::GetPos() {
     return &pos;
 }
+
+bool SpaceObj::Compare(SpaceObj *a, SpaceObj *b) {
+    return a->GetPos()->x < b->GetPos()->x;
+}

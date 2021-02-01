@@ -5,6 +5,8 @@
 #ifndef GALACTIVISATION_GALAXY_H
 #define GALACTIVISATION_GALAXY_H
 
+#include <vector>
+#include <bits/stdc++.h>
 #include "SpaceObj.h"
 
 #define NUM_SYSTEMS 200000
@@ -15,7 +17,7 @@ protected:
     long y0 = -500000000000000000;
     long x1 = 500000000000000000;
     long y1 = 500000000000000000;
-    SpaceObj *objs[1000000]{};
+    std::vector<SpaceObj*> objs{};
     unsigned int objsLen = 0;
     unsigned long tick = 0;
     long systemBorderReach = 10000000000;
@@ -39,6 +41,8 @@ public:
     void PreRender(SDL_Renderer *renderer);
 
     void OnResize(SDL_Renderer *renderer);
+
+    void SortSpaceObjects();
 };
 
 #endif //GALACTIVISATION_GALAXY_H
