@@ -82,8 +82,9 @@ void Galaxy::Calc(double d) {
     unsigned long long lastTick = tick;
     tick += (long long) d;
     cam.Calc(tick, d);
+    printf("\r%4.1f FPS - %llu.%02llu.%02llu ", 1000.0 / d, tick / 5000000, (tick / 50000) % 100, (tick / 1000) % 50);
+    fflush(stdout);
     if (lastTick % 1000 > tick % 1000) {
-        printf("\nAter %li\n", tick / 1000);
         for (auto system : systems) {
             system->Calc(tick, d);
         }

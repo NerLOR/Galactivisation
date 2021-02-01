@@ -84,13 +84,10 @@ void App::Main() {
         game.Render(renderer);
         end_time = SDL_GetTicks();
         delay_time = ticksPerFrame - (end_time - start_time);
-        printf("\r%.1f FPS  ", 1000.0 / (double) (end_time - last_time));
-        fflush(stdout);
-        if (delay_time > 0) {
-            SDL_Delay(delay_time);
-        }
+        if (delay_time > 0) SDL_Delay(delay_time);
         last_time = start_time;
     }
+    printf("\n");
     Cleanup();
 }
 
