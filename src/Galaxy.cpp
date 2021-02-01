@@ -5,14 +5,14 @@
 #include "Galaxy.h"
 #include "StaticSpaceObj.h"
 
-void Galaxy::AddSpaceObject(SpaceObj *obj) {
-    objsLen++;
-    objs.push_back(obj);
+void Galaxy::AddSystem(StaticSpaceObj *system) {
+    numSystems++;
+    systems.push_back(system);
 }
 
 void Galaxy::Init(SDL_Renderer *renderer) {
     cam.Init(renderer, GetDiameter());
-    AddSpaceObject(new StaticSpaceObj(0, 0, 0, 1));
+    AddSystem(new StaticSpaceObj(0, 0, 0, 1));
     unsigned long long dia = GetDiameter();
 
     double cycles = 3.5;
@@ -59,13 +59,12 @@ void Galaxy::Init(SDL_Renderer *renderer) {
                 dis = 300000000000000000;
             }
             double p = (len / (double) dia * dis / (double) dia * 50);
-            //printf("%f\n", p);
             if (p < ((double) rand() / RAND_MAX)) {
                 break;
             }
             tries++;
         }
-        AddSpaceObject(new StaticSpaceObj(x, y, 0, 1));
+        AddSystem(new StaticSpaceObj(x, y, 0, 1));
         if (i + 1 == NUM_SYSTEMS || (i & 0xF) == 0) {
             printf("\r%5.1f%%", (double) (i + 1) / NUM_SYSTEMS * 100);
             fflush(stdout);
@@ -76,7 +75,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
     for (int i = 0; i < num; i++) {
         delete points[i];
     }
-    SortSpaceObjects();
+    SortSystems();
 }
 
 void Galaxy::Calc(double d) {
@@ -85,8 +84,8 @@ void Galaxy::Calc(double d) {
     cam.Calc(tick, d);
     if (lastTick % 1000 > tick % 1000) {
         printf("\nAter %li\n", tick / 1000);
-        for (unsigned int i = 0; i < objsLen; i++) {
-            objs[i]->Calc(tick, d);
+        for (auto system : systems) {
+            system->Calc(tick, d);
         }
     }
 }
@@ -101,12 +100,12 @@ void Galaxy::Render(SDL_Renderer *renderer) {
         SDL_RenderCopy(renderer, preRender, nullptr, &dst);
         delete zero;
     } else {
-        for (auto obj : objs) {
-            long long idx = obj->GetPos()->x;
+        for (auto system : systems) {
+            long long idx = system->GetPos()->x;
             if (idx < cx1) {
                 continue;
             } else if (idx < cx2) {
-                obj->Render(renderer, &cam);
+                system->Render(renderer, &cam);
             } else {
                 break;
             }
@@ -130,8 +129,8 @@ void Galaxy::PreRender(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(preRenderer, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(preRenderer);
     SDL_SetRenderDrawColor(preRenderer, 0xFF, 0xFF, 0xFF, 0x00);
-    for (auto obj : objs) {
-        Position *pos = obj->GetPos();
+    for (auto system : systems) {
+        Position *pos = system->GetPos();
         auto x = (float) pos->x / (float) mppx + (float) size / 2;
         auto y = (float) pos->y / (float) mppx + (float) size / 2;
         SDL_FRect rect;
@@ -151,6 +150,6 @@ void Galaxy::OnResize(SDL_Renderer *renderer) {
     PreRender(renderer);
 }
 
-void Galaxy::SortSpaceObjects() {
-    std::sort(objs.begin(), objs.end(), SpaceObj::Compare);
+void Galaxy::SortSystems() {
+    std::sort(systems.begin(), systems.end(), SpaceObj::Compare);
 }

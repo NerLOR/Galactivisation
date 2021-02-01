@@ -7,7 +7,7 @@
 
 #include <vector>
 #include <bits/stdc++.h>
-#include "SpaceObj.h"
+#include "StaticSpaceObj.h"
 
 #define NUM_SYSTEMS 200000
 
@@ -17,8 +17,8 @@ protected:
     long long y0 = -500000000000000000;
     long long x1 = 500000000000000000;
     long long y1 = 500000000000000000;
-    std::vector<SpaceObj*> objs{};
-    unsigned int objsLen = 0;
+    std::vector<StaticSpaceObj*> systems{};
+    unsigned int numSystems = 0;
     unsigned long long tick = 0;
     long long systemBorderReach = 10000000000;
     SDL_Texture *preRender = nullptr;
@@ -28,7 +28,7 @@ public:
 
     Galaxy() = default;
 
-    void AddSpaceObject(SpaceObj *obj);
+    void AddSystem(StaticSpaceObj *system);
 
     void Init(SDL_Renderer *renderer);
 
@@ -42,7 +42,7 @@ public:
 
     void OnResize(SDL_Renderer *renderer);
 
-    void SortSpaceObjects();
+    void SortSystems();
 };
 
 #endif //GALACTIVISATION_GALAXY_H
