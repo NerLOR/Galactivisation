@@ -12,10 +12,10 @@
 class SpaceObj {
 protected:
     Position pos;
-    long mass = 1;
+    long long mass = 1;
     double orientation = 0.0;
     double baseOrientation = 0.0;
-    long ticksPerRevolution = 1;
+    long long ticksPerRevolution = 1;
 
 public:
     explicit SpaceObj(Position pos);
@@ -24,7 +24,7 @@ public:
 
     Position *GetPos();
 
-    virtual void Calc(unsigned long t, double d) = 0;
+    virtual void Calc(unsigned long long t, double d) = 0;
 
     virtual void Render(SDL_Renderer *renderer, Camera *cam) = 0;
 

@@ -13,14 +13,14 @@
 
 class Galaxy {
 protected:
-    long x0 = -500000000000000000;
-    long y0 = -500000000000000000;
-    long x1 = 500000000000000000;
-    long y1 = 500000000000000000;
+    long long x0 = -500000000000000000;
+    long long y0 = -500000000000000000;
+    long long x1 = 500000000000000000;
+    long long y1 = 500000000000000000;
     std::vector<SpaceObj*> objs{};
     unsigned int objsLen = 0;
-    unsigned long tick = 0;
-    long systemBorderReach = 10000000000;
+    unsigned long long tick = 0;
+    long long systemBorderReach = 10000000000;
     SDL_Texture *preRender = nullptr;
 
 public:
@@ -36,7 +36,7 @@ public:
 
     void Render(SDL_Renderer *renderer);
 
-    [[nodiscard]] unsigned long GetDiameter() const;
+    [[nodiscard]] unsigned long long GetDiameter() const;
 
     void PreRender(SDL_Renderer *renderer);
 

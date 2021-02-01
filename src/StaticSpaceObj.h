@@ -11,15 +11,15 @@ SDL_Texture *sunTexture;
 
 class StaticSpaceObj : public SpaceObj {
 protected:
-    unsigned long size;
+    unsigned long long size;
     Position *border[8]{};
     int owner = 0;
     int borderSize = 0;
 
 public:
-    StaticSpaceObj(long x, long y, double orientation, long tpr);
+    StaticSpaceObj(long long x, long long y, double orientation, long long tpr);
 
-    void Calc(unsigned long t, double d) override;
+    void Calc(unsigned long long t, double d) override;
 
     void Render(SDL_Renderer *renderer, Camera *cam) override;
 };

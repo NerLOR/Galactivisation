@@ -13,7 +13,7 @@ void Galaxy::AddSpaceObject(SpaceObj *obj) {
 void Galaxy::Init(SDL_Renderer *renderer) {
     cam.Init(renderer, GetDiameter());
     AddSpaceObject(new StaticSpaceObj(0, 0, 0, 1));
-    unsigned long dia = GetDiameter();
+    unsigned long long dia = GetDiameter();
 
     double cycles = 3.5;
     double incr = 1.0 / 64;
@@ -27,19 +27,19 @@ void Galaxy::Init(SDL_Renderer *renderer) {
     int num = 0;
     for (double i = 0; i <= cycles * M_PI; i += incr) {
         for (int j = 0; j < c; j++) {
-            points[num] = new Position((long) ((a + b * i) * cos(i + j * M_PI * 2 / c)),
-                                       (long) ((a + b * i) * sin(i + j * M_PI * 2 / c)));
+            points[num] = new Position((long long) ((a + b * i) * cos(i + j * M_PI * 2 / c)),
+                                       (long long) ((a + b * i) * sin(i + j * M_PI * 2 / c)));
             num++;
         }
     }
 
     for (int i = 0; i < NUM_SYSTEMS; i++) {
-        long x, y, hy;
+        long long x, y, hy;
         int tries = 0;
         while (true) {
             do {
-                x = (long) ((double) rand() / RAND_MAX * (double) dia) - x1;
-                y = (long) ((double) rand() / RAND_MAX * (double) dia) - y1;
+                x = (long long) ((double) rand() / RAND_MAX * (double) dia) - x1;
+                y = (long long) ((double) rand() / RAND_MAX * (double) dia) - y1;
                 hy = hypot(x, y);
             } while (hy > dia / 2 || hy < 50000000000000000);
             auto len = (double) dia;
@@ -54,7 +54,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
             double dis = hypot(points[point]->x, points[point]->y);
             dis -= (double) dia / 4;
             dis *= 4;
-            *(long*) &dis &= 0x7FFFFFFFFFFFFFFF;
+            *(long long*) &dis &= 0x7FFFFFFFFFFFFFFF;
             if (dis < 300000000000000000) {
                 dis = 300000000000000000;
             }
@@ -80,8 +80,8 @@ void Galaxy::Init(SDL_Renderer *renderer) {
 }
 
 void Galaxy::Calc(double d) {
-    unsigned long lastTick = tick;
-    tick += (long) d;
+    unsigned long long lastTick = tick;
+    tick += (long long) d;
     cam.Calc(tick, d);
     if (lastTick % 1000 > tick % 1000) {
         printf("\nAter %li\n", tick / 1000);
@@ -92,7 +92,7 @@ void Galaxy::Calc(double d) {
 }
 
 void Galaxy::Render(SDL_Renderer *renderer) {
-    long cx1, cy1, cx2, cy2;
+    long long cx1, cy1, cx2, cy2;
     cam.Render(renderer, &cx1, &cy1, &cx2, &cy2);
     if (preRender != nullptr && cam.mppx > 200000000000000) {
         SDL_Rect dst;
@@ -102,7 +102,7 @@ void Galaxy::Render(SDL_Renderer *renderer) {
         delete zero;
     } else {
         for (auto obj : objs) {
-            long idx = obj->GetPos()->x;
+            long long idx = obj->GetPos()->x;
             if (idx < cx1) {
                 continue;
             } else if (idx < cx2) {
@@ -114,7 +114,7 @@ void Galaxy::Render(SDL_Renderer *renderer) {
     }
 }
 
-unsigned long Galaxy::GetDiameter() const {
+unsigned long long Galaxy::GetDiameter() const {
     return x1 - x0;
 }
 
@@ -122,7 +122,7 @@ void Galaxy::PreRender(SDL_Renderer *renderer) {
     if (preRender != nullptr) {
         SDL_DestroyTexture(preRender);
     }
-    long mppx = 100000000000000; // / 2000;
+    long long mppx = 100000000000000; // / 2000;
     int size = (int) (GetDiameter() / mppx);
     printf("Size: %i\n", size);
     SDL_Surface *surf = SDL_CreateRGBSurface(0, size, size, 32, 0, 0, 0, 0);

@@ -4,7 +4,7 @@
 
 #include "StaticSpaceObj.h"
 
-StaticSpaceObj::StaticSpaceObj(long x, long y, double orientation, long tpr) : SpaceObj(Position(0, 0)) {
+StaticSpaceObj::StaticSpaceObj(long long x, long long y, double orientation, long long tpr) : SpaceObj(Position(0, 0)) {
     this->pos.x = x;
     this->pos.y = y;
     this->baseOrientation = orientation;
@@ -12,7 +12,7 @@ StaticSpaceObj::StaticSpaceObj(long x, long y, double orientation, long tpr) : S
     this->size = 700000000;
 }
 
-void StaticSpaceObj::Calc(unsigned long t, double d) {
+void StaticSpaceObj::Calc(unsigned long long t, double d) {
     orientation = baseOrientation + (double) t / (double) ticksPerRevolution;
 }
 

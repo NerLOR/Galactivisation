@@ -20,8 +20,8 @@ void Game::OnEvent(SDL_Event *evt) {
         SDL_GetMouseState(&x, &y);
         x -= cam->screenW / 2;
         y -= cam->screenH / 2;
-        long posX = (long) (x * cam->mppx);
-        long posY = (long) (y * cam->mppx);
+        long long posX = (long long) (x * cam->mppx);
+        long long posY = (long long) (y * cam->mppx);
         if (evt->wheel.y < 0) {
             cam->zoomTarget *= 2;
             if (cam->zoomTarget > cam->zoomMax) {

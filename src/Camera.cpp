@@ -8,7 +8,7 @@ Camera::Camera() : pos(Position(0, 0)), posTarget(Position(0, 0)) {
 
 }
 
-void Camera::Calc(unsigned long t, double d) {
+void Camera::Calc(unsigned long long t, double d) {
     const Uint8 *state = SDL_GetKeyboardState(nullptr);
     auto *posChange = new Vector(0, 0);
     if (state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP]) {
@@ -34,7 +34,7 @@ void Camera::Calc(unsigned long t, double d) {
         zoom = zoomTarget;
         pos = posTarget;
     } else {
-        zoom += (long) ((double) ((long) (zoomTarget - zoom)) * mult);
+        zoom += (long long) ((double) ((long long) (zoomTarget - zoom)) * mult);
         posChange = new Vector((double) (posTarget.x - pos.x), (double) (posTarget.y - pos.y));
         *posChange *= mult;
         pos += *posChange;
@@ -42,7 +42,7 @@ void Camera::Calc(unsigned long t, double d) {
     }
 }
 
-bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long w, unsigned long h) {
+bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long long w, unsigned long long h) {
     auto *half_size = new Vector((double) w / 2, (double)  h / 2);
     Position rel_pos_1 = *obj_pos;
     Position rel_pos_2 = *obj_pos;
@@ -51,12 +51,12 @@ bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long w, un
     rel_pos_1 -= pos;
     rel_pos_2 -= pos;
     delete half_size;
-    long sw2 = screenW / 2;
-    long sh2 = screenH / 2;
-    long x1 = rel_pos_1.x / (long) mppx + sw2;
-    long y1 = rel_pos_1.y / (long) mppx + sh2;
-    long x2 = rel_pos_2.x / (long) mppx + sw2;
-    long y2 = rel_pos_2.y / (long) mppx + sh2;
+    long long sw2 = screenW / 2;
+    long long sh2 = screenH / 2;
+    long long x1 = rel_pos_1.x / (long long) mppx + sw2;
+    long long y1 = rel_pos_1.y / (long long) mppx + sh2;
+    long long x2 = rel_pos_2.x / (long long) mppx + sw2;
+    long long y2 = rel_pos_2.y / (long long) mppx + sh2;
     rect->x = (int) x1;
     rect->y = (int) y1;
     rect->w = (int) (x2 - x1);
@@ -64,24 +64,24 @@ bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long w, un
     return x2 >= 0 && y2 >= 0 && x1 <= screenW && y1 <= screenH;
 }
 
-bool Camera::GetScreenPosF(Position *obj_pos, SDL_FRect *rect, unsigned long w, unsigned long h) {
+bool Camera::GetScreenPosF(Position *obj_pos, SDL_FRect *rect, unsigned long long w, unsigned long long h) {
     return false;
 }
 
-void Camera::Render(SDL_Renderer *renderer, long *x1, long *y1, long *x2, long *y2) {
+void Camera::Render(SDL_Renderer *renderer, long long *x1, long long *y1, long long *x2, long long *y2) {
     mppx = zoom / screenW;
     SDL_GetMouseState(&mouseX, &mouseY);
-    mousePosX = (long) ((mouseX - screenW / 2) * mppx);
-    mousePosY = (long) ((mouseY - screenH / 2) * mppx);
-    *x1 = pos.x - screenW * (long) mppx / 2;
-    *y1 = pos.y - screenH * (long) mppx / 2;
-    *x2 = pos.x + screenW * (long) mppx / 2;
-    *y2 = pos.y + screenH * (long) mppx / 2;
+    mousePosX = (long long) ((mouseX - screenW / 2) * mppx);
+    mousePosY = (long long) ((mouseY - screenH / 2) * mppx);
+    *x1 = pos.x - screenW * (long long) mppx / 2;
+    *y1 = pos.y - screenH * (long long) mppx / 2;
+    *x2 = pos.x + screenW * (long long) mppx / 2;
+    *y2 = pos.y + screenH * (long long) mppx / 2;
 }
 
-void Camera::Init(SDL_Renderer *renderer, unsigned long diameter) {
+void Camera::Init(SDL_Renderer *renderer, unsigned long long diameter) {
     screenW = 0;
     screenH = 0;
     SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
-    zoomMax = (long) ((double) diameter * ((double) screenW / screenH + 0.25));
+    zoomMax = (long long) ((double) diameter * ((double) screenW / screenH + 0.25));
 }

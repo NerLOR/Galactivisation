@@ -4,20 +4,20 @@
 
 #include "Position.h"
 
-Position::Position(long x, long y) {
+Position::Position(long long x, long long y) {
     this->x = x;
     this->y = y;
 }
 
 Position &Position::operator+=(Vector &vec) {
-    this->x += (long) vec.x;
-    this->y += (long) vec.y;
+    this->x += (long long) vec.x;
+    this->y += (long long) vec.y;
     return *this;
 }
 
 Position &Position::operator-=(Vector &vec) {
-    this->x -= (long) vec.x;
-    this->y -= (long) vec.y;
+    this->x -= (long long) vec.x;
+    this->y -= (long long) vec.y;
     return *this;
 }
 

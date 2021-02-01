@@ -9,14 +9,14 @@
 
 class FixedSpaceObj : public SpaceObj {
     SpaceObj *parent;
-    long orbitRadius;
-    long ticksPerRotation;
+    long long orbitRadius;
+    long long ticksPerRotation;
     double baseRotation;
 
 public:
-    FixedSpaceObj(SpaceObj *parent, long orbitRadius, double tpr, double orientation);
+    FixedSpaceObj(SpaceObj *parent, long long orbitRadius, double tpr, double orientation);
 
-    void Calc(unsigned long t, double d) override;
+    void Calc(unsigned long long t, double d) override;
 
     void Render(SDL_Renderer *renderer, Camera *cam) override;
 };

@@ -9,10 +9,10 @@
 
 class Position {
 public:
-    long x;
-    long y;
+    long long x;
+    long long y;
 
-    Position(long x, long y);
+    Position(long long x, long long y);
 
     Position &operator+=(Vector &vec);
 
