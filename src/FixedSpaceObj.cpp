@@ -3,6 +3,7 @@
 //
 
 #include "FixedSpaceObj.h"
+# include <cmath>
 
 FixedSpaceObj::FixedSpaceObj(SpaceObj *parent, long long orbitRadius, double tpr, double orientation) : SpaceObj(Position(0, 0)) {
     this->parent = parent;

@@ -3,6 +3,7 @@
 //
 
 #include "StaticSpaceObj.h"
+# include <cmath>
 
 StaticSpaceObj::StaticSpaceObj(long long x, long long y, double orientation, long long tpr) : SpaceObj(Position(0, 0)) {
     this->pos.x = x;

@@ -54,7 +54,7 @@ void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_
 // asec -> 50 ater -> 0:00:50
 // apri -> 100 asec -> 1:23:20
 
-int main() {
+int main(int argc, char *argv[]) {
     auto *app = new App();
     app->Init();
     app->SetFps(60);
