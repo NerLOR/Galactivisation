@@ -3,6 +3,8 @@
 //
 
 #include "Galaxy.h"
+
+#include <utility>
 #include "StaticSpaceObj.h"
 
 void Galaxy::AddSystem(System *system) {
@@ -54,7 +56,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
             double dis = hypot(points[point]->x, points[point]->y);
             dis -= (double) dia / 4;
             dis *= 4;
-            *(long long*) &dis &= 0x7FFFFFFFFFFFFFFF;
+            *(long long *) &dis &= 0x7FFFFFFFFFFFFFFF;
             if (dis < 300000000000000000) {
                 dis = 300000000000000000;
             }
@@ -75,7 +77,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
     for (int i = 0; i < num; i++) {
         delete points[i];
     }
-    SortSystems();
+    InitSystems();
 }
 
 void Galaxy::Calc(double d) {
@@ -152,6 +154,6 @@ void Galaxy::OnResize(SDL_Renderer *renderer) {
     PreRender(renderer);
 }
 
-void Galaxy::SortSystems() {
+void Galaxy::InitSystems() {
     std::sort(systems.begin(), systems.end(), SpaceObj::Compare);
 }

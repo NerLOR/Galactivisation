@@ -7,7 +7,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "Game.h"
+#include "game/Game.h"
 
 class App {
 protected:

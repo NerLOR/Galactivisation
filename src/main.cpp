@@ -34,16 +34,16 @@ void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_
     }
 }
 
-#include "Vector.cpp"
-#include "Position.cpp"
-#include "Camera.cpp"
-#include "SpaceObj.cpp"
-#include "StaticSpaceObj.cpp"
-#include "FixedSpaceObj.cpp"
-#include "Galaxy.cpp"
-#include "Game.cpp"
+#include "game/Vector.cpp"
+#include "game/Position.cpp"
+#include "game/Camera.cpp"
+#include "game/SpaceObj.cpp"
+#include "game/StaticSpaceObj.cpp"
+#include "game/FixedSpaceObj.cpp"
+#include "game/Galaxy.cpp"
+#include "game/Game.cpp"
 #include "App.cpp"
-#include "System.cpp"
+#include "game/System.cpp"
 
 //  -> 1 ms (physics)
 // Tertiae, Ter.: Tick -> 1 sec (IG "1 hr") (IRL 0:00:01)

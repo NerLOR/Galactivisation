@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <bits/stdc++.h>
+#include <queue>
 #include "StaticSpaceObj.h"
 #include "System.h"
 
@@ -42,7 +43,7 @@ public:
 
     void OnResize(SDL_Renderer *renderer);
 
-    void SortSystems();
+    void InitSystems();
 };
 
 #endif //GALACTIVISATION_GALAXY_H
