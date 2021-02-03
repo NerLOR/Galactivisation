@@ -5,14 +5,14 @@
 #include "Galaxy.h"
 #include "StaticSpaceObj.h"
 
-void Galaxy::AddSystem(StaticSpaceObj *system) {
+void Galaxy::AddSystem(System *system) {
     numSystems++;
     systems.push_back(system);
 }
 
 void Galaxy::Init(SDL_Renderer *renderer) {
     cam.Init(renderer, GetDiameter());
-    AddSystem(new StaticSpaceObj(0, 0, 0, 1));
+    AddSystem(new System(0, 0));
     unsigned long long dia = GetDiameter();
 
     double cycles = 3.5;
@@ -64,7 +64,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
             }
             tries++;
         }
-        AddSystem(new StaticSpaceObj(x, y, 0, 1));
+        AddSystem(new System(x, y));
         if (i + 1 == NUM_SYSTEMS || (i & 0xF) == 0) {
             printf("\r%5.1f%%", (double) (i + 1) / NUM_SYSTEMS * 100);
             fflush(stdout);
@@ -80,13 +80,14 @@ void Galaxy::Init(SDL_Renderer *renderer) {
 
 void Galaxy::Calc(double d) {
     unsigned long long lastTick = tick;
-    tick += (long long) d;
+    tick += (unsigned long long) d;
     cam.Calc(tick, d);
     printf("\r%4.1f FPS - %llu.%02llu.%02llu ", 1000.0 / d, tick / 5000000, (tick / 50000) % 100, (tick / 1000) % 50);
     fflush(stdout);
     if (lastTick % 1000 > tick % 1000) {
+        // TODO Calc in other thread
         for (auto system : systems) {
-            system->Calc(tick, d);
+            system->Calc(tick, (double) (tick - lastTick));
         }
     }
 }

@@ -5,6 +5,7 @@
 #ifndef GALACTIVISATION_STATICSPACEOBJ_H
 #define GALACTIVISATION_STATICSPACEOBJ_H
 
+#include <vector>
 #include "SpaceObj.h"
 
 SDL_Texture *sunTexture;
@@ -12,9 +13,6 @@ SDL_Texture *sunTexture;
 class StaticSpaceObj : public SpaceObj {
 protected:
     unsigned long long size;
-    Position *border[8]{};
-    int owner = 0;
-    int borderSize = 0;
 
 public:
     StaticSpaceObj(long long x, long long y, double orientation, long long tpr);

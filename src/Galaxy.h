@@ -8,6 +8,7 @@
 #include <vector>
 #include <bits/stdc++.h>
 #include "StaticSpaceObj.h"
+#include "System.h"
 
 #define NUM_SYSTEMS 200000
 
@@ -17,10 +18,9 @@ protected:
     long long y0 = -500000000000000000;
     long long x1 = 500000000000000000;
     long long y1 = 500000000000000000;
-    std::vector<StaticSpaceObj*> systems{};
+    std::vector<System *> systems{};
     unsigned int numSystems = 0;
     unsigned long long tick = 0;
-    long long systemBorderReach = 10000000000;
     SDL_Texture *preRender = nullptr;
 
 public:
@@ -28,7 +28,7 @@ public:
 
     Galaxy() = default;
 
-    void AddSystem(StaticSpaceObj *system);
+    void AddSystem(System *system);
 
     void Init(SDL_Renderer *renderer);
 
