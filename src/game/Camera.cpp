@@ -64,10 +64,6 @@ bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long long 
     return x2 >= 0 && y2 >= 0 && x1 <= screenW && y1 <= screenH;
 }
 
-bool Camera::GetScreenPosF(Position *obj_pos, SDL_FRect *rect, unsigned long long w, unsigned long long h) {
-    return false;
-}
-
 void Camera::Render(SDL_Renderer *renderer, long long *x1, long long *y1, long long *x2, long long *y2) {
     mppx = zoom / screenW;
     SDL_GetMouseState(&mouseX, &mouseY);

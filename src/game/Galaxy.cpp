@@ -135,14 +135,14 @@ void Galaxy::PreRender(SDL_Renderer *renderer) {
     SDL_SetRenderDrawColor(preRenderer, 0xFF, 0xFF, 0xFF, 0x00);
     for (auto system : systems) {
         Position *pos = system->GetPos();
-        auto x = (float) pos->x / (float) mppx + (float) size / 2;
-        auto y = (float) pos->y / (float) mppx + (float) size / 2;
-        SDL_FRect rect;
+        auto x = (int) ((float) pos->x / (float) mppx + (float) size / 2);
+        auto y = (int) ((float) pos->y / (float) mppx + (float) size / 2);
+        SDL_Rect rect;
         rect.w = 3;
         rect.h = 3;
         rect.x = x - rect.w / 2;
         rect.y = y - rect.h / 2;
-        SDL_RenderFillRectF(preRenderer, &rect);
+        SDL_RenderFillRect(preRenderer, &rect);
     }
     SDL_DestroyRenderer(preRenderer);
     preRender = SDL_CreateTextureFromSurface(renderer, surf);
