@@ -39,6 +39,8 @@ public:
 
     void Init(SDL_Renderer *renderer, unsigned long long diameter);
 
+    void SetPos(long long x, long long y, long long zoom);
+
 };
 
 

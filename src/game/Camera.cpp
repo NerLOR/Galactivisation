@@ -85,3 +85,12 @@ void Camera::Init(SDL_Renderer *renderer, unsigned long long diameter) {
     SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
     zoomMax = (long long) ((double) diameter * ((double) screenW / screenH + 0.25));
 }
+
+void Camera::SetPos(long long x, long long y, long long zoom) {
+    pos.x = x;
+    pos.y = y;
+    posTarget.x = x;
+    posTarget.y = y;
+    this->zoom = zoom;
+    this->zoomTarget = zoom;
+}

@@ -156,4 +156,64 @@ void Galaxy::OnResize(SDL_Renderer *renderer) {
 
 void Galaxy::InitSystems() {
     std::sort(systems.begin(), systems.end(), SpaceObj::Compare);
+    printf("Sorted!\n");
+    for (int i = 0; i < systems.size(); i++) {
+        System *sys1 = systems[i];
+        Position *pos1 = sys1->GetPos();
+        for (int j = i + 1; j < systems.size(); j++) {
+            System *sys2 = systems[j];
+            Position *pos2 = sys2->GetPos();
+            if (pos2->x - pos1->x > systemReach * 2) {
+                break;
+            }
+            unsigned long long dist = hypot(pos2->x - pos1->x, pos2->y - pos1->y);
+            if (dist > systemReach * 2) {
+                continue;
+            }
+            sys1->AddNeighbor(sys2);
+        }
+    }
+    printf("Calculated neighbors...\n");
+    long long div = 10000000000;
+    auto *a = new Position(0, 0);
+    auto *b = new Position(0, 0);
+    auto *c = new Position(0, 0);
+    auto *d = new Position(0, 0);
+    for (auto sys1 : systems) {
+        Position *p1 = sys1->GetPos();
+        a->x = p1->x / div;
+        a->y = p1->y / div;
+        auto neighbors = sys1->GetNeighbors();
+        cont:
+        for (auto sys2 : *neighbors) {
+            Position *p2 = sys2->GetPos();
+            c->x = p2->x / div;
+            c->y = p2->y / div;
+            for (auto sys3 : *sys2->GetNeighbors()) {
+                if (sys3 == sys1) continue;
+                Position *p3 = sys3->GetPos();
+                d->x = p3->x / div;
+                d->y = p3->y / div;
+                double d1 = hypot(p2->x - p3->x, p2->y - p3->y);
+                for (auto sys4 : *neighbors) {
+                    if (sys4 == sys2 || sys4 == sys3) continue;
+                    Position *p4 = sys4->GetPos();
+                    b->x = p4->x / div;
+                    b->y = p4->y / div;
+                    // Intersect p1<->p4 x p2<->p3
+                    double d2 = hypot(p1->x - p4->x, p1->y - p4->y);
+                    bool intersect = Position::intersect(a, b, c, d);
+                    if (intersect && d2 > d1) {
+                        sys1->RemoveNeighbor(sys4);
+                        goto cont;
+                    }
+                }
+            }
+        }
+    }
+    delete a;
+    delete b;
+    delete c;
+    delete d;
+    printf("Finished!\n");
 }

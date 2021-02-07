@@ -21,6 +21,12 @@ public:
     Position &operator+=(Position &pos);
 
     Position &operator-=(Position &pos);
+
+    static bool isOnSegment(Position *a, Position *b, Position *c);
+
+    static int orientation(Position *a, Position *b, Position *c);
+
+    static bool intersect(Position *a1, Position *a2, Position *b1, Position *b2);
 };
 
 

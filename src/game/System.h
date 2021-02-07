@@ -14,7 +14,7 @@ protected:
     std::vector<StaticSpaceObj *> suns{};
     std::vector<SpaceObj *> objs{};
     std::vector<Position *> borderPoints{};
-    std::vector<System *> neighbors{};
+    std::set<System *> neighbors{};
     int owner = 0;
 
 public:
@@ -23,6 +23,14 @@ public:
     void Calc(unsigned long long t, double d) override;
 
     void Render(SDL_Renderer *renderer, Camera *cam) override;
+
+    void AddNeighbor(System *neighbor);
+
+    void RemoveNeighbor(System *neighbor);
+
+    std::set<System *> *GetNeighbors();
+
+    void AddBorderPoint(Position *p);
 };
 
 

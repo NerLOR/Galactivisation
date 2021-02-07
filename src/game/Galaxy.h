@@ -23,6 +23,7 @@ protected:
     unsigned int numSystems = 0;
     unsigned long long tick = 0;
     SDL_Texture *preRender = nullptr;
+    unsigned long long systemReach = 2000000000000000;
 
 public:
     Camera cam;
