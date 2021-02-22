@@ -44,6 +44,8 @@ public:
 
     void OnResize(SDL_Renderer *renderer);
 
+    std::vector<System *> *GetSystems();
+
     void InitSystems();
 };
 

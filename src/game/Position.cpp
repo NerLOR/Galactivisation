@@ -4,6 +4,11 @@
 
 #include "Position.h"
 
+Position::Position() {
+    x = 0;
+    y = 0;
+}
+
 Position::Position(long long x, long long y) {
     this->x = x;
     this->y = y;

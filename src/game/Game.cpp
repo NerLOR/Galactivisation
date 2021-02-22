@@ -17,26 +17,46 @@ void Game::OnEvent(SDL_Event *evt) {
     Camera *cam = &galaxy->cam;
     if (evt->type == SDL_MOUSEWHEEL) {
         int x, y;
+        long long posX, posY, posMX, posMY;
         SDL_GetMouseState(&x, &y);
         x -= cam->screenW / 2;
         y -= cam->screenH / 2;
-        long long posX = (long long) (x * cam->mppx);
-        long long posY = (long long) (y * cam->mppx);
+        posMX = (long long) (x * cam->mppx) + cam->pos.x;
+        posMY = (long long) (y * cam->mppx) + cam->pos.y;
+        posX = posMX;
+        posY = posMY;
+        double min = 2000000000000000, hy;
+        if (cam->zoom > 0) {
+            for (auto system : *galaxy->GetSystems()) {
+                auto pos = system->GetPos();
+                if (posMX - pos->x > 2000000000000000) {
+                    continue;
+                } else if (pos->x - posMX > 2000000000000000) {
+                    break;
+                }
+                hy = hypot(pos->x - posMX, pos->y - posMY);
+                if (hy < min) {
+                    min = hy;
+                    posX = pos->x;
+                    posY = pos->y;
+                }
+            }
+        }
         if (evt->wheel.y < 0) {
             cam->zoomTarget *= 2;
             if (cam->zoomTarget > cam->zoomMax) {
                 cam->zoomTarget = cam->zoomMax;
             } else {
-                cam->posTarget.x -= posX / 3;
-                cam->posTarget.y -= posY / 3;
+                cam->posTarget.x = 2 * cam->posTarget.x - posX;
+                cam->posTarget.y = 2 * cam->posTarget.y - posY;
             }
         } else if (evt->wheel.y > 0) {
             cam->zoomTarget /= 2;
             if (cam->zoomTarget < cam->zoomMin) {
                 cam->zoomTarget = cam->zoomMin;
             } else {
-                cam->posTarget.x += posX / 3;
-                cam->posTarget.y += posY / 3;
+                cam->posTarget.x = posX / 2 + cam->posTarget.x / 2;
+                cam->posTarget.y = posY / 2 + cam->posTarget.y / 2;
             }
         }
     } else if (evt->type == SDL_KEYUP) {

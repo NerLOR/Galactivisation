@@ -6,11 +6,15 @@
 #define GALACTIVISATION_POSITION_H
 
 #include "Vector.h"
+#include <cstdio>
+#include <cmath>
 
 class Position {
 public:
     long long x;
     long long y;
+
+    Position();
 
     Position(long long x, long long y);
 
