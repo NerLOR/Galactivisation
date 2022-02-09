@@ -3,7 +3,8 @@
 //
 
 #include "StaticSpaceObj.h"
-# include <cmath>
+
+SDL_Texture *sunTexture;
 
 StaticSpaceObj::StaticSpaceObj(long long x, long long y, double orientation, long long tpr) : SpaceObj(Position(0, 0)) {
     this->pos.x = x;
@@ -29,4 +30,8 @@ void StaticSpaceObj::Render(SDL_Renderer *renderer, Camera *cam) {
         if (dst.h < 1) dst.h = 1;
         SDL_RenderCopyEx(renderer, sunTexture, nullptr, &dst, 0, nullptr, SDL_FLIP_NONE);
     }
+}
+
+SDL_Texture **StaticSpaceObj::GetSunTexture() {
+    return &sunTexture;
 }

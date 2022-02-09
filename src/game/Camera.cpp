@@ -64,6 +64,89 @@ bool Camera::GetScreenPos(Position *obj_pos, SDL_Rect *rect, unsigned long long 
     return x2 >= 0 && y2 >= 0 && x1 <= screenW && y1 <= screenH;
 }
 
+bool Camera::GetLineScreenPos(Position *op1, Position *op2, SDL_Point *l1, SDL_Point *l2) {
+    unsigned long long w = screenW * mppx;
+    unsigned long long h = screenH * mppx;
+    auto *half_size = new Vector((double) w / 2, (double)  h / 2);
+    Position rp1 = pos;
+    Position rp2 = pos;
+    rp1 -= *half_size;
+    rp2 += *half_size;
+    delete half_size;
+    Position p1 = *op1;
+    Position p2 = *op2;
+
+    if ((p1.x < rp1.x && p2.x < rp1.x) || (p1.x > rp2.x && p2.x > rp2.x) ||
+        (p1.y < rp1.y && p2.y < rp1.y) || (p1.y > rp2.y && p2.y > rp2.y)) {
+        return false;
+    }
+
+    if (p1.x == p2.x) {
+        if (p1.y < rp1.y) p1.y = rp1.y;
+        else if (p1.y > rp2.y) p1.y = rp2.y;
+        if (p2.y < rp1.y) p2.y = rp1.y;
+        else if (p2.y > rp2.y) p2.y = rp2.y;
+    } else if (p1.y == p2.y) {
+        if (p1.x < rp1.x) p1.x = rp1.x;
+        else if (p1.x > rp2.x) p1.x = rp2.x;
+        if (p2.x < rp1.x) p2.x = rp1.x;
+        else if (p2.x > rp2.x) p2.x = rp2.x;
+    } else {
+        // y = a * x + b
+        double a = (double) (p2.y - p1.y) / (double) (p2.x - p1.x);
+        double b = (double) p1.y - a * (double) p1.x;
+        double b_min, b_max;
+        if (a > 0) {
+            b_max = (double) rp2.y - a * (double) rp1.x;
+            b_min = (double) rp1.y - a * (double) rp2.x;
+        } else {
+            b_max = (double) rp2.y - a * (double) rp2.x;
+            b_min = (double) rp1.y - a * (double) rp1.x;
+        }
+        if (b < b_min || b > b_max)
+            return false;
+
+        if (p1.x < rp1.x) {
+            p1.x = rp1.x;
+            p1.y = (long long) (a * (double) p1.x + b);
+        } else if (p2.x < rp1.x) {
+            p2.x = rp1.x;
+            p2.y = (long long) (a * (double) p2.x + b);
+        }
+        if (p1.x > rp2.x) {
+            p1.x = rp2.x;
+            p1.y = (long long) (a * (double) p1.x + b);
+        } else if (p2.x > rp2.x) {
+            p2.x = rp2.x;
+            p2.y = (long long) (a * (double) p2.x + b);
+        }
+
+        if (p1.y < rp1.y) {
+            p1.y = rp1.y;
+            p1.x = (long long) (((double) p1.y - b) / a);
+        } else if (p2.y < rp1.y) {
+            p2.y = rp1.y;
+            p2.x = (long long) (((double) p2.y - b) /a);
+        }
+        if (p1.y > rp2.y) {
+            p1.y = rp2.y;
+            p1.x = (long long) (((double) p1.y - b) / a);
+        } else if (p2.y > rp2.y) {
+            p2.y = rp2.y;
+            p2.x = (long long) (((double) p2.y - b) / a);
+        }
+    }
+
+    SDL_Rect dst1, dst2;
+    GetScreenPos(&p1, &dst1, 0, 0);
+    GetScreenPos(&p2, &dst2, 0, 0);
+    l1->x = dst1.x;
+    l1->y = dst1.y;
+    l2->x = dst2.x;
+    l2->y = dst2.y;
+    return true;
+}
+
 void Camera::Render(SDL_Renderer *renderer, long long *x1, long long *y1, long long *x2, long long *y2) {
     mppx = zoom / screenW;
     SDL_GetMouseState(&mouseX, &mouseY);

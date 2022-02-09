@@ -8,22 +8,27 @@
 #include <vector>
 #include <bits/stdc++.h>
 #include <queue>
+
 #include "StaticSpaceObj.h"
 #include "System.h"
+#include "Border.h"
 
-#define NUM_SYSTEMS 200000
+#define NUM_SYSTEMS 10000 // 200000
 
 class Galaxy {
-protected:
+public:
     long long x0 = -500000000000000000;
     long long y0 = -500000000000000000;
     long long x1 = 500000000000000000;
     long long y1 = 500000000000000000;
+
+protected:
     std::vector<System *> systems{};
     unsigned int numSystems = 0;
     unsigned long long tick = 0;
     SDL_Texture *preRender = nullptr;
     unsigned long long systemReach = 2000000000000000;
+    std::vector<Border *> borders{};
 
 public:
     Camera cam;
@@ -45,6 +50,8 @@ public:
     void OnResize(SDL_Renderer *renderer);
 
     std::vector<System *> *GetSystems();
+
+    std::vector<Border *> *GetBorders();
 
     void InitSystems();
 };

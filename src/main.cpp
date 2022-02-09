@@ -1,6 +1,9 @@
 
 #include <iostream>
 #include <SDL2/SDL.h>
+#include "App.h"
+#include "game/StaticSpaceObj.h"
+
 
 void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_t radius) {
     const int32_t diameter = (radius * 2);
@@ -34,17 +37,6 @@ void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_
     }
 }
 
-#include "game/Vector.cpp"
-#include "game/Position.cpp"
-#include "game/Camera.cpp"
-#include "game/SpaceObj.cpp"
-#include "game/StaticSpaceObj.cpp"
-#include "game/FixedSpaceObj.cpp"
-#include "game/Galaxy.cpp"
-#include "game/Game.cpp"
-#include "App.cpp"
-#include "game/System.cpp"
-
 //  -> 1 ms (physics)
 // Tertiae, Ter.: Tick -> 1 sec (IG "1 hr") (IRL 0:00:01)
 // Secundae, Sec.: Tock -> 60 Ticks (IG "1 day") (IRL 0:01:00)
@@ -59,7 +51,7 @@ int main(int argc, char *argv[]) {
     auto *app = new App();
     app->Init();
     app->SetFps(60);
-    app->LoadTexture("res/sun.png", &sunTexture);
+    app->LoadTexture("res/sun.png", StaticSpaceObj::GetSunTexture());
     app->game.Init(app->GetRenderer());
     app->Resize(1080, 720, false);
     app->Main();

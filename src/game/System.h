@@ -6,6 +6,7 @@
 #define GALACTIVISATION_SYSTEM_H
 
 #include <vector>
+#include <set>
 #include "SpaceObj.h"
 #include "StaticSpaceObj.h"
 

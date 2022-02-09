@@ -6,6 +6,7 @@
 
 #include <utility>
 #include "StaticSpaceObj.h"
+#include "../utils/voronoi.h"
 
 void Galaxy::AddSystem(System *system) {
     numSystems++;
@@ -15,8 +16,8 @@ void Galaxy::AddSystem(System *system) {
 void Galaxy::Init(SDL_Renderer *renderer) {
     cam.Init(renderer, GetDiameter());
     AddSystem(new System(0, 0));
-    unsigned long long dia = GetDiameter();
 
+    unsigned long long dia = GetDiameter();
     double cycles = 3.5;
     double incr = 1.0 / 64;
     double a = 0;
@@ -45,15 +46,15 @@ void Galaxy::Init(SDL_Renderer *renderer) {
                 hy = hypot(x, y);
             } while (hy > dia / 2 || hy < 50000000000000000);
             auto len = (double) dia;
-            int point = 0;
+            int center = 0;
             for (int j = 0; j < num; j++) {
                 double a = hypot(x - points[j]->x, y - points[j]->y);
                 if (a < len) {
                     len = a;
-                    point = j;
+                    center = j;
                 }
             }
-            double dis = hypot(points[point]->x, points[point]->y);
+            double dis = hypot(points[center]->x, points[center]->y);
             dis -= (double) dia / 4;
             dis *= 4;
             *(long long *) &dis &= 0x7FFFFFFFFFFFFFFF;
@@ -74,9 +75,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
     }
     printf("\n");
 
-    for (int i = 0; i < num; i++) {
-        delete points[i];
-    }
+    for (int i = 0; i < num; i++) delete points[i];
     InitSystems();
 }
 
@@ -104,6 +103,13 @@ void Galaxy::Render(SDL_Renderer *renderer) {
         SDL_RenderCopy(renderer, preRender, nullptr, &dst);
         delete zero;
     } else {
+        SDL_Point p1, p2;
+        SDL_SetRenderDrawColor(renderer, 0x00, 0xC0, 0x40, 0x00);
+        for (auto border : borders) {
+            if (cam.GetLineScreenPos(border->p1, border->p2, &p1, &p2)) {
+                SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
+            }
+        }
         for (auto system : systems) {
             long long idx = system->GetPos()->x;
             if (idx < cx1) {
@@ -156,10 +162,14 @@ void Galaxy::OnResize(SDL_Renderer *renderer) {
 
 void Galaxy::InitSystems() {
     std::sort(systems.begin(), systems.end(), SpaceObj::Compare);
-
+    utils::voronoi::CalcSystemNeighbors(this);
     printf("Finished!\n");
 }
 
 std::vector<System *> *Galaxy::GetSystems() {
     return &systems;
+}
+
+std::vector<Border *> *Galaxy::GetBorders() {
+    return &borders;
 }

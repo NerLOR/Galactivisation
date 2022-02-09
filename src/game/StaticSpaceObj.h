@@ -6,9 +6,9 @@
 #define GALACTIVISATION_STATICSPACEOBJ_H
 
 #include <vector>
+#include <SDL2/SDL.h>
 #include "SpaceObj.h"
 
-SDL_Texture *sunTexture;
 
 class StaticSpaceObj : public SpaceObj {
 protected:
@@ -16,6 +16,8 @@ protected:
 
 public:
     StaticSpaceObj(long long x, long long y, double orientation, long long tpr);
+
+    static SDL_Texture **GetSunTexture();
 
     void Calc(unsigned long long t, double d) override;
 
