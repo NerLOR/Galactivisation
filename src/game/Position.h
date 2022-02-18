@@ -6,8 +6,6 @@
 #define GALACTIVISATION_POSITION_H
 
 #include "Vector.h"
-#include <cstdio>
-#include <cmath>
 
 class Position {
 public:
@@ -26,12 +24,15 @@ public:
 
     Position &operator-=(Position &pos);
 
-    static bool isOnSegment(Position *a, Position *b, Position *c);
+    static bool IsOnSegment(Position &a, Position &b, Position &c);
 
-    static int orientation(Position *a, Position *b, Position *c);
+    static int GetOrientation(Position &a, Position &b, Position &c);
 
-    static bool intersect(Position *a1, Position *a2, Position *b1, Position *b2);
+    static bool DoLinesIntersect(Position &a1, Position &a2, Position &b1, Position &b2);
+
+    static bool DoLineSegmentsIntersect(Position &a1, Position &a2, Position &b1, Position &b2);
+
+    long long GetDistanceTo(Position &b) const;
 };
-
 
 #endif //GALACTIVISATION_POSITION_H

@@ -4,8 +4,9 @@
 
 #include "System.h"
 
-System::System(long x, long y) : SpaceObj(Position(x, y)) {
+System::System(long long x, long long y, unsigned long long reach) : SpaceObj(Position(x, y)) {
     suns.push_back(new StaticSpaceObj(x, y, 0, 0));
+    this->reach = reach;
 }
 
 void System::Calc(unsigned long long int t, double d) {
@@ -32,16 +33,11 @@ void System::Render(SDL_Renderer *renderer, Camera *cam) {
                 }
             }
             if (hypot(cam->mouseX - dst.x, cam->mouseY - dst.y) < 10) {
-                if (borderPoints.size() > 1) {
-                    SDL_Rect dst1, dst2;
-                    SDL_SetRenderDrawColor(renderer, 0x00, 0xC0, 0x40, 0x00);
-                    for (int i = 0; i < borderPoints.size(); i++) {
-                        Position *p1 = borderPoints[i];
-                        Position *p2 = borderPoints[(i == 0) ? borderPoints.size() - 1 : i - 1];
-                        cam->GetScreenPos(p1, &dst1, 1, 1);
-                        cam->GetScreenPos(p2, &dst2, 1, 1);
-                        //SDL_RenderDrawLine(renderer, dst1.x, dst1.y, dst2.x, dst2.y);
-                        SDL_RenderDrawPoint(renderer, dst1.x, dst2.y);
+                SDL_Point p1, p2;
+                SDL_SetRenderDrawColor(renderer, 0x00, 0xC0, 0x40, 0x00);
+                for (auto b : borders) {
+                    if (cam->GetLineScreenPos(&b->p1, &b->p2, &p1, &p2)) {
+                        SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
                     }
                 }
             }
@@ -76,6 +72,13 @@ std::set<System *> *System::GetNeighbors() {
     return &neighbors;
 }
 
-void System::AddBorderPoint(Position *p) {
-    borderPoints.push_back(p);
+void System::AddBorder(Border *b) {
+    borders.push_back(b);
+    System *other = (b->sys1 == this) ? b->sys2 : b->sys1;
+    if (!neighbors.contains(other) &&
+            pos.GetDistanceTo(other->pos) < reach &&
+        Position::DoLineSegmentsIntersect(b->p1, b->p2, pos, other->pos))
+    {
+        AddNeighbor(other);
+    }
 }

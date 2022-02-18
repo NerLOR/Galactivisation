@@ -13,7 +13,7 @@
 #include "System.h"
 #include "Border.h"
 
-#define NUM_SYSTEMS 10000 // 200000
+#define NUM_SYSTEMS 200000
 
 class Galaxy {
 public:
@@ -27,7 +27,7 @@ protected:
     unsigned int numSystems = 0;
     unsigned long long tick = 0;
     SDL_Texture *preRender = nullptr;
-    unsigned long long systemReach = 2000000000000000;
+    unsigned long long systemReach = 4000000000000000;
     std::vector<Border *> borders{};
 
 public:

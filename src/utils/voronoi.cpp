@@ -31,6 +31,14 @@ namespace utils::voronoi {
             this->x = x;
             this->y = y;
         }
+
+        bool operator==(const Point &a) const {
+            return x == a.x && y == a.y;
+        }
+
+        bool operator<(const Point &a) const {
+            return x == a.x ? x < a.x : y < a.y;
+        }
     };
 
     class Vector {
@@ -46,9 +54,15 @@ namespace utils::voronoi {
         }
     };
 
+    class BLItem;
+
     class Edge {
     public:
+        System *sys1 = nullptr;
+        System *sys2 = nullptr;
+        BLItem *neighbor = nullptr;
         Point start;
+        Point end;
         Vector dir;
         bool vertical = false;
         bool horizontal = false;
@@ -74,6 +88,12 @@ namespace utils::voronoi {
             horizontal = (dir.y == 0);
             NormalizeDirection();
             CalcCoefficients();
+        }
+
+        void SetSystems(System *s1, System *s2) {
+            assert(s1 != nullptr && s2 != nullptr);
+            sys1 = s1;
+            sys2 = s2;
         }
 
         void NormalizeDirection() {
@@ -147,10 +167,25 @@ namespace utils::voronoi {
     public:
         Point a;
         Point b;
+        System *sys1;
+        System *sys2;
 
-        CompleteEdge(Point a, Point b) {
-            this->a = a;
-            this->b = b;
+        explicit CompleteEdge(Edge &e) {
+            assert(e.sys1 != nullptr && e.sys2 != nullptr);
+            this->a = e.start;
+            this->b = e.end;
+            this->sys1 = e.sys1;
+            this->sys2 = e.sys2;
+        }
+
+        CompleteEdge(Edge &e1, Edge &e2) {
+            assert(e1.sys1 != nullptr && e1.sys2 != nullptr);
+            assert(e2.sys1 != nullptr && e2.sys2 != nullptr);
+            assert((e1.sys1 == e2.sys1 && e1.sys2 == e2.sys2) || (e1.sys1 == e2.sys2 && e1.sys2 == e2.sys1));
+            this->a = e1.end;
+            this->b = e2.end;
+            this->sys1 = e1.sys1;
+            this->sys2 = e1.sys2;
         }
     };
 
@@ -160,6 +195,7 @@ namespace utils::voronoi {
     public:
         Point focus;
         CircleEvent *event = nullptr;
+        System *sys = nullptr;
 
         bool GetY(Coord x, Coord directrixY, Coord &res) const {
             if (focus.y == directrixY)
@@ -186,15 +222,14 @@ namespace utils::voronoi {
     };
 
     class SiteEvent : public Event {
-        System *system;
-
     public:
+        System *sys;
         Point point;
 
-        explicit SiteEvent(System *sys)  {
+        explicit SiteEvent(System *s)  {
             type = EventType::SiteEvent;
-            system = sys;
-            point = {(Coord) system->GetPos()->x, (Coord) system->GetPos()->y};
+            sys = s;
+            point = {(Coord) sys->GetPos()->x, (Coord) sys->GetPos()->y};
             pos = point;
         }
     };
@@ -233,20 +268,28 @@ namespace utils::voronoi {
         BLItem *left = nullptr;
         BLItem *right = nullptr;
 
-        explicit BLItem(Point focus) {
+        explicit BLItem(Point focus, System *sys) {
             type = BLItemType::Arc;
             arc.focus = focus;
             arc.event = nullptr;
+            arc.sys = sys;
         }
 
-        BLItem(Point start, Point &left, Point &right) {
+        BLItem(Point start, Arc &left, Arc &right) {
             type = BLItemType::Edge;
-            edge = Edge(start, left, right);
+            edge = Edge(start, left.focus, right.focus);
+            edge.SetSystems(left.sys, right.sys);
         }
 
         BLItem(Point start, Vector dir) {
             type = BLItemType::Edge;
             edge = Edge(start, dir);
+        }
+
+        void SetSystems(System *s1, System *s2) {
+            assert(type == BLItemType::Edge);
+            assert(s1 != nullptr && s2 != nullptr);
+            edge.SetSystems(s1, s2);
         }
 
         void SetLeftChild(BLItem *l) {
@@ -391,6 +434,7 @@ namespace utils::voronoi {
 
     public:
         Coord sweepLine;
+        std::vector<BLItem *> unfinishedEdges{};
         std::vector<CompleteEdge *> edges{};
         std::priority_queue<Event *, std::vector<Event *>, EventComparison> events{};
         BLItem *root;
@@ -419,12 +463,13 @@ namespace utils::voronoi {
                 }
             }
             FinishEdges();
+            MergeCompletedEdges();
+            DeleteBeachLine();
+            root = nullptr;
         }
 
         void FinishEdges() {
             FinishEdge(root);
-            delete root;
-            root = nullptr;
         }
 
         void ProcessSiteEvent(SiteEvent *event) {
@@ -500,16 +545,17 @@ namespace utils::voronoi {
         void AddArcToBeachLine(SiteEvent &event) {
             Point p = event.point;
             if (!root) {
-                root = new BLItem(p);
+                root = new BLItem(p, event.sys);
                 return;
             }
 
             BLItem *repl = GetActiveArcForXCoord(p.x, sweepLine);
             assert((repl != nullptr) && (repl->type == BLItemType::Arc));
-            auto newArc = new BLItem(p);
+            auto newArc = new BLItem(p, event.sys);
 
             if (repl->arc.focus.y == p.y) {
                 auto newEdge = new BLItem({p.x / 2 + repl->arc.focus.x / 2,P1.y}, {0, -1});
+                newEdge->SetSystems(repl->arc.sys, event.sys);
 
                 if (repl->parent) {
                     if (repl == repl->parent->left) {
@@ -531,15 +577,17 @@ namespace utils::voronoi {
                 return;
             }
 
-            auto splitLeft = new BLItem(repl->arc.focus);
-            auto splitRight = new BLItem(repl->arc.focus);
+            auto splitLeft = new BLItem(repl->arc.focus, repl->arc.sys);
+            auto splitRight = new BLItem(repl->arc.focus, repl->arc.sys);
 
             Coord intersectionY;
             assert(repl->arc.GetY(p.x, sweepLine, intersectionY));
 
             Point start = {p.x, intersectionY};
-            auto edgeLeft = new BLItem(start, repl->arc.focus, newArc->arc.focus);
-            auto edgeRight = new BLItem(start, newArc->arc.focus, repl->arc.focus);
+            auto edgeLeft = new BLItem(start, repl->arc, newArc->arc);
+            auto edgeRight = new BLItem(start, newArc->arc, repl->arc);
+            edgeLeft->edge.neighbor = edgeRight;
+            assert(edgeLeft->edge.sys1 == edgeRight->edge.sys2 && edgeLeft->edge.sys2 == edgeRight->edge.sys1);
 
             assert(repl->left == nullptr);
             assert(repl->right == nullptr);
@@ -577,10 +625,12 @@ namespace utils::voronoi {
             assert(leftArc != nullptr && rightArc != nullptr);
             assert(leftArc != rightArc);
 
-            edges.emplace_back(new CompleteEdge(leftEdge->edge.start, event.center));
-            edges.emplace_back(new CompleteEdge(event.center, rightEdge->edge.start));
+            leftEdge->edge.end = event.center;
+            rightEdge->edge.end = event.center;
+            unfinishedEdges.emplace_back(leftEdge);
+            unfinishedEdges.emplace_back(rightEdge);
 
-            auto newItem = new BLItem(event.center, leftArc->arc.focus, rightArc->arc.focus);
+            auto newItem = new BLItem(event.center, leftArc->arc, rightArc->arc);
 
             BLItem *higher = nullptr;
             BLItem *temp = squeezed;
@@ -592,8 +642,7 @@ namespace utils::voronoi {
             assert(higher != nullptr && higher->type == BLItemType::Edge);
 
             newItem->SetParentFromItem(higher);
-            newItem->SetLeftChild(higher->left);
-            newItem->SetRightChild(higher->right);
+            newItem->SetChildren(higher->left, higher->right);
 
             assert(squeezed->parent == nullptr || squeezed->parent->type == BLItemType::Edge);
             BLItem *remaining = nullptr;
@@ -618,9 +667,7 @@ namespace utils::voronoi {
                 assert(squeezed->arc.event->valid);
                 squeezed->arc.event->valid = false;
             }
-            delete leftEdge;
             delete squeezed;
-            delete rightEdge;
 
             CheckCircle(leftArc);
             CheckCircle(rightArc);
@@ -631,7 +678,7 @@ namespace utils::voronoi {
                 return;
 
             Coord x, y;
-            Edge e = item->edge;
+            Edge &e = item->edge;
             if (e.vertical) {
                 x = e.GetX(0);
                 y = (e.dir.y > 0) ? P1.y : P0.y;
@@ -659,23 +706,67 @@ namespace utils::voronoi {
                     x = e.GetX(y);
                 }
             }
-            edges.push_back(new CompleteEdge(e.start, {x, y}));
+
+            e.end = {x, y};
+            unfinishedEdges.push_back(item);
 
             FinishEdge(item->left);
             FinishEdge(item->right);
         }
+
+        void DeleteBeachLine() {
+            DeleteBeachLineItem(root);
+        }
+
+        void DeleteBeachLineItem(BLItem *item) {
+            if (item->type == BLItemType::Edge) {
+                DeleteBeachLineItem(item->left);
+                DeleteBeachLineItem(item->right);
+            }
+            delete item;
+        }
+
+        void MergeCompletedEdges() {
+            std::set<BLItem *> done{};
+
+            for (auto i : unfinishedEdges) {
+                if (done.contains(i) || !i->edge.neighbor)
+                    continue;
+
+                edges.push_back(new CompleteEdge(i->edge, i->edge.neighbor->edge));
+                done.insert(i->edge.neighbor);
+                done.insert(i);
+                delete i->edge.neighbor;
+                delete i;
+            }
+
+            for (auto i : unfinishedEdges) {
+                if (done.contains(i)) continue;
+                edges.push_back(new CompleteEdge(i->edge));
+                delete i;
+            }
+
+            done.clear();
+            unfinishedEdges.clear();
+        }
     };
 
     void CalcSystemNeighbors(Galaxy *galaxy) {
-        auto vor = new Voronoi({(Coord) galaxy->x0, (Coord) galaxy->y0}, {(Coord) galaxy->x1, (Coord) galaxy->y1});
-        vor->AddSystems(galaxy->GetSystems());
-        vor->Calc();
-        auto *borders = galaxy->GetBorders();
-        for (auto *e : vor->edges) {
-            borders->push_back(new Border(
-                    new Position((long long) e->a.x, (long long) e->a.y),
-                    new Position((long long) e->b.x, (long long) e->b.y)
-            ));
+        auto vor = Voronoi({(Coord) galaxy->x0, (Coord) galaxy->y0}, {(Coord) galaxy->x1, (Coord) galaxy->y1});
+        vor.AddSystems(galaxy->GetSystems());
+        vor.Calc();
+        auto borders = galaxy->GetBorders();
+        for (auto e : vor.edges) {
+            auto b = new Border(
+                    Position((long long) e->a.x, (long long) e->a.y),
+                    Position((long long) e->b.x, (long long) e->b.y),
+                    e->sys1,
+                    e->sys2
+            );
+            e->sys1->AddBorder(b);
+            e->sys2->AddBorder(b);
+            borders->push_back(b);
+            delete e;
         }
     }
 }

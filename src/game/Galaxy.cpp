@@ -15,7 +15,7 @@ void Galaxy::AddSystem(System *system) {
 
 void Galaxy::Init(SDL_Renderer *renderer) {
     cam.Init(renderer, GetDiameter());
-    AddSystem(new System(0, 0));
+    AddSystem(new System(0, 0, systemReach));
 
     unsigned long long dia = GetDiameter();
     double cycles = 3.5;
@@ -67,7 +67,7 @@ void Galaxy::Init(SDL_Renderer *renderer) {
             }
             tries++;
         }
-        AddSystem(new System(x, y));
+        AddSystem(new System(x, y, systemReach));
         if (i + 1 == NUM_SYSTEMS || (i & 0xF) == 0) {
             printf("\r%5.1f%%", (double) (i + 1) / NUM_SYSTEMS * 100);
             fflush(stdout);
@@ -103,13 +103,6 @@ void Galaxy::Render(SDL_Renderer *renderer) {
         SDL_RenderCopy(renderer, preRender, nullptr, &dst);
         delete zero;
     } else {
-        SDL_Point p1, p2;
-        SDL_SetRenderDrawColor(renderer, 0x00, 0xC0, 0x40, 0x00);
-        for (auto border : borders) {
-            if (cam.GetLineScreenPos(border->p1, border->p2, &p1, &p2)) {
-                SDL_RenderDrawLine(renderer, p1.x, p1.y, p2.x, p2.y);
-            }
-        }
         for (auto system : systems) {
             long long idx = system->GetPos()->x;
             if (idx < cx1) {

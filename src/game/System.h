@@ -7,19 +7,24 @@
 
 #include <vector>
 #include <set>
+
+class System;
+
 #include "SpaceObj.h"
 #include "StaticSpaceObj.h"
+#include "Border.h"
 
 class System : public SpaceObj {
 protected:
     std::vector<StaticSpaceObj *> suns{};
     std::vector<SpaceObj *> objs{};
-    std::vector<Position *> borderPoints{};
+    std::vector<Border *> borders{};
     std::set<System *> neighbors{};
     int owner = 0;
+    unsigned long long reach;
 
 public:
-    System(long x, long y);
+    System(long long x, long long y, unsigned long long reach);
 
     void Calc(unsigned long long t, double d) override;
 
@@ -31,7 +36,7 @@ public:
 
     std::set<System *> *GetNeighbors();
 
-    void AddBorderPoint(Position *p);
+    void AddBorder(Border *b);
 };
 
 
